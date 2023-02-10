@@ -1,0 +1,38 @@
+# Type the request, select it, write click and select "HTTP Requestor"
+# https://packagecontrol.io/packages/Http%20Requester
+
+DELETE http://localhost:3001/api/persons/1
+
+#Valid post
+POST http://localhost:3001/api/persons
+content-type: application/json
+POST_BODY:
+{
+    "name":"nik",
+    "number":"123"
+}
+
+#duplicate name
+POST http://localhost:3001/api/persons
+content-type: application/json
+POST_BODY:
+{
+    "name":"arto hellas",
+    "number":"123"
+}
+
+#missing name
+POST http://localhost:3001/api/persons
+content-type: application/json
+POST_BODY:
+{
+    "number":"123"
+}
+
+#missing number
+POST http://localhost:3001/api/persons
+content-type: application/json
+POST_BODY:
+{
+    "name":"johnny"
+}
