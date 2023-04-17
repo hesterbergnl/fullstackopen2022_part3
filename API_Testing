@@ -36,3 +36,11 @@ POST_BODY:
 {
     "name":"johnny"
 }
+
+PUT http://localhost:3001/api/persons/643ac14dd61d79fe8fd71bac
+content-type: application/json
+POST_BODY:
+{
+    "name":"Nikolai",
+    "number":"123"
+}
