@@ -17,17 +17,15 @@ morgan.token('data', (request) => {
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
 
-// const unknownEndpoint = (request, response) => {
-//   response.status(404).send({ error: 'unknown endpoint'})
-// }
-
-// app.use(unknownEndpoint)
-
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
+  console.log(error.name)
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformed id'})
+  } else if (error.name === 'ValidationError') {
+    console.log("Hello!")
+    return response.status(400).json({ error: error.message })
   }
 
   next(error)
@@ -70,7 +68,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if(!body.name || !body.number) {
@@ -84,9 +82,11 @@ app.post('/api/persons', (request, response) => {
     number: body.number,
   })
 
-  newPerson.save().then(savedNote => {
-    response.json(savedNote)
-  })
+  newPerson.save()
+    .then(savedNote => {
+      response.json(savedNote)
+    })
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -97,7 +97,11 @@ app.put('/api/persons/:id', (request, response, next) => {
     number: body.number,
   }
 
-  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+  Person.findByIdAndUpdate(
+    request.params.id, 
+    person, 
+    { new: true, runValidators: true, context: 'query' }
+  )
     .then(updatedPerson => {
       response.json(updatedPerson)
     })
